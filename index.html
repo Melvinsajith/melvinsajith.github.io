@@ -1,734 +1,947 @@
 <!DOCTYPE html>
+
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Melvin Sajith — Robotics Software Engineer</title>
+<meta content="Melvin Sajith builds ROS 2 software for autonomous mobile robots, robot arms and the tools people use to run them." name="description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0d0d10; --bg-deep:#08080a; --surface:#16161c;
+  --ink:#f2f0f5; --ink-2:rgba(242,240,245,.74); --ink-3:rgba(242,240,245,.52);
+  --teal:#3b2cff; --teal-text:#8f84ff; --tan:#ff8a3d; --peach:#ff5a2a;
+  --line:rgba(242,240,245,.12); --line-strong:rgba(242,240,245,.3);
+  --btn-ink:#0d0d10;
+  --glow-blue:rgba(59,44,255,.55); --glow-orange:rgba(255,74,28,.45);
+  --map-unknown:#111116; --map-free:#211e3a; --map-wall:#ff5a2a; --map-ray:rgba(120,100,255,.3); --map-robot:#8f84ff; --map-trail:rgba(255,138,61,.6);
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f4f3f8; --bg-deep:#e9e7f2; --surface:#ffffff;
+    --ink:#121216; --ink-2:#3d3b48; --ink-3:#5e5b6b;
+    --teal:#3b2cff; --teal-text:#3322e0; --tan:#c2410c; --peach:#ff5a2a;
+    --line:rgba(18,18,22,.12); --line-strong:rgba(18,18,22,.35);
+    --btn-ink:#121216;
+    --glow-blue:rgba(59,44,255,.25); --glow-orange:rgba(255,74,28,.22);
+    --map-unknown:#e4e2ee; --map-free:#ffffff; --map-wall:#3b2cff; --map-ray:rgba(59,44,255,.18); --map-robot:#121216; --map-trail:rgba(194,65,12,.6);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f4f3f8; --bg-deep:#e9e7f2; --surface:#ffffff;
+  --ink:#121216; --ink-2:#3d3b48; --ink-3:#5e5b6b;
+  --teal:#3b2cff; --teal-text:#3322e0; --tan:#c2410c; --peach:#ff5a2a;
+  --line:rgba(18,18,22,.12); --line-strong:rgba(18,18,22,.35);
+  --btn-ink:#121216;
+  --glow-blue:rgba(59,44,255,.25); --glow-orange:rgba(255,74,28,.22);
+  --map-unknown:#e4e2ee; --map-free:#ffffff; --map-wall:#3b2cff; --map-ray:rgba(59,44,255,.18); --map-robot:#121216; --map-trail:rgba(194,65,12,.6);
+  color-scheme:light;
+}
+:root[data-theme="dark"]{ color-scheme:dark; }
 
-  <title>Melvin Sajith</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px)}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:400 17px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+img,svg,canvas{max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--peach);outline-offset:3px;border-radius:2px}
+h1,h2,h3{font-family:"Chakra Petch","Segoe UI",system-ui,sans-serif;font-weight:600;line-height:1.1;margin:0}
+p{margin:0}
+.wrap{width:min(1180px,100% - 48px);margin-inline:auto}
 
-  <!-- Favicons -->
-  <link href="assets/img/d.png" rel="icon">
-  <link href="assets/img/d.png" rel="apple-touch-icon">
+/* header */
+header{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.bar{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.mark{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:18px;letter-spacing:.02em}
+.mark svg{width:26px;height:26px;color:var(--teal-text)}
+nav ul{display:flex;gap:28px;list-style:none;margin:0;padding:0}
+nav a{text-decoration:none;color:var(--ink-2);font-size:15px}
+nav a:hover{color:var(--ink)}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;padding:12px 20px;
+  font:600 15px/1 "Chakra Petch",sans-serif;letter-spacing:.04em;text-decoration:none;
+  border:1px solid var(--line-strong);color:var(--ink);background:transparent;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  transition:background .2s,color .2s,border-color .2s;
+}
+.btn:hover{border-color:var(--peach);color:var(--peach)}
+.btn.primary{background:var(--peach);border-color:var(--peach);color:var(--btn-ink)}
+.btn.primary:hover{background:var(--tan);border-color:var(--tan);color:var(--btn-ink)}
+.bar .btn{padding:10px 16px;font-size:14px}
+@media (max-width:760px){nav{display:none}}
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+/* hero */
+.hero{padding:64px 0 88px;position:relative;overflow:hidden;isolation:isolate}
+.hero::before{
+  content:"";position:absolute;z-index:-1;inset:-10% -5% -10% 30%;
+  background:
+    radial-gradient(38% 46% at 78% 22%,var(--glow-blue),transparent 70%),
+    radial-gradient(30% 40% at 46% 72%,var(--glow-orange),transparent 70%),
+    radial-gradient(26% 34% at 62% 48%,var(--glow-blue),transparent 70%);
+  filter:blur(40px);pointer-events:none;
+}
+.scope-frame{box-shadow:0 0 0 1px var(--line),0 30px 80px -30px var(--glow-blue)}
+.contact{background:radial-gradient(60% 80% at 90% 10%,var(--glow-blue),transparent 70%),radial-gradient(50% 70% at 10% 100%,var(--glow-orange),transparent 70%),var(--bg-deep)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:center}
+.hello{color:var(--teal-text);font-weight:500;margin-bottom:18px;display:flex;align-items:center;gap:12px}
+.hello::before{content:"";width:28px;height:2px;background:var(--tan)}
+.hero h1{font-size:clamp(48px,7vw,92px);font-weight:700;letter-spacing:-.01em;line-height:.95}
+.hero h1 span{display:block}
+.role{font-family:"Chakra Petch",sans-serif;font-size:clamp(20px,2.2vw,26px);font-weight:500;color:var(--peach);margin:22px 0 18px;letter-spacing:.02em}
+:root[data-theme="light"] .role{color:var(--tan)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .role{color:var(--tan)}}
+.lede{color:var(--ink-2);max-width:34em;font-size:18px}
+.cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
 
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+.scope{position:relative;padding:18px}
+.scope::before,.scope::after,.scope .c3,.scope .c4{content:"";position:absolute;width:26px;height:26px;border:2px solid var(--teal-text);pointer-events:none}
+.scope::before{top:0;left:0;border-right:0;border-bottom:0}
+.scope::after{top:0;right:0;border-left:0;border-bottom:0}
+.scope .c3{bottom:0;left:0;border-right:0;border-top:0}
+.scope .c4{bottom:0;right:0;border-left:0;border-top:0}
+.scope-frame{position:relative;border:1px solid var(--line);background:var(--map-unknown)}
+#map{display:block;width:100%;aspect-ratio:16/10}
+.readout{
+  display:flex;flex-wrap:wrap;gap:6px 22px;justify-content:space-between;
+  margin-top:14px;font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums;
+}
+.readout b{color:var(--ink);font-weight:500;margin-left:6px}
+.caption{font-size:13px;color:var(--ink-3);margin-top:6px}
+@media (max-width:900px){.hero-grid{grid-template-columns:1fr;gap:44px}.hero{padding-top:40px}}
 
-  <!-- Template Main CSS File -->
-  <link href="assets/css/style.css" rel="stylesheet">
+/* sections */
+section{padding:96px 0;border-top:1px solid var(--line)}
+.sec-head{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:48px;margin-bottom:56px;align-items:end}
+.sec-head h2{font-size:clamp(32px,4vw,48px)}
+.sec-head p{color:var(--ink-2);max-width:40em}
+#about .sec-head{align-items:start}
+@media (max-width:820px){.sec-head{grid-template-columns:1fr;gap:16px}}
 
-  <!-- =======================================================
-  * Template Name: iPortfolio
-  * Updated: Jan 09 2024 with Bootstrap v5.3.2
-  * Template URL: https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
+/* focus areas */
+.focus{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line)}
+.focus > div{padding:32px 28px;border-left:1px solid var(--line)}
+.focus > div:first-child{border-left:0}
+.focus h3{font-size:22px;margin:18px 0 12px}
+.focus p{color:var(--ink-2);font-size:16px}
+.focus svg{width:40px;height:40px;color:var(--peach)}
+:root[data-theme="light"] .focus svg{color:var(--teal)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .focus svg{color:var(--teal)}}
+@media (max-width:900px){.focus{grid-template-columns:1fr}.focus > div{border-left:0;border-top:1px solid var(--line)}.focus > div:first-child{border-top:0}}
+
+/* projects */
+.projects{display:grid;gap:0}
+.proj{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:48px;padding:40px 0;border-top:1px solid var(--line)}
+.proj:first-child{border-top:0;padding-top:0}
+.proj h3{font-size:clamp(24px,2.6vw,32px);margin-bottom:12px}
+.proj .meta{color:var(--ink-3);font-size:14px}
+.proj .meta a{color:var(--teal-text);text-decoration:none;display:inline-block;margin-top:14px;font-weight:500}
+.proj .meta a:hover{text-decoration:underline}
+.proj ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.proj li{position:relative;padding-left:22px;color:var(--ink-2)}
+.proj li::before{content:"";position:absolute;left:0;top:.72em;width:8px;height:2px;background:var(--tan)}
+.stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;padding:0;list-style:none}
+.stack li{padding:4px 10px !important;font-size:13px;border:1px solid var(--line-strong);color:var(--ink) !important}
+.stack li::before{display:none}
+.proj.featured{background:var(--surface);padding:40px;margin-bottom:40px;border:1px solid var(--line);border-left:3px solid var(--peach)}
+.proj.featured + .proj{border-top:0;padding-top:0}
+@media (max-width:820px){.proj{grid-template-columns:1fr;gap:20px}.proj.featured{padding:28px 22px}}
+
+/* experience timeline */
+.timeline{list-style:none;margin:0;padding:0;position:relative}
+.timeline::before{content:"";position:absolute;left:7px;top:8px;bottom:8px;width:1px;background:var(--line-strong)}
+.job{position:relative;padding:0 0 48px 44px;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:40px}
+.job:last-child{padding-bottom:0}
+.job::before{content:"";position:absolute;left:0;top:6px;width:15px;height:15px;border:2px solid var(--teal-text);background:var(--bg);transform:rotate(45deg) scale(.8)}
+.job.now::before{background:var(--peach);border-color:var(--peach)}
+.job h3{font-size:22px}
+.job .org{color:var(--teal-text);font-weight:500;margin-top:6px}
+.job .when{color:var(--ink-3);font-size:14px;margin-top:6px}
+.job ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;color:var(--ink-2)}
+.job li{padding-left:22px;position:relative}
+.job li::before{content:"";position:absolute;left:0;top:.72em;width:8px;height:2px;background:var(--tan)}
+.sub{margin-top:18px;color:var(--ink-3);font-size:15px}
+@media (max-width:820px){.job{grid-template-columns:1fr;gap:14px}}
+
+/* publication */
+.pub{display:grid;grid-template-columns:auto minmax(0,1fr);gap:36px;align-items:start;padding:40px;border:1px solid var(--line);position:relative}
+.pub svg{width:56px;height:56px;color:var(--teal-text)}
+.pub h3{font-size:clamp(22px,2.6vw,30px);max-width:26em}
+.pub .venue{color:var(--peach);margin:14px 0 12px;font-weight:500}
+:root[data-theme="light"] .pub .venue{color:var(--tan)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .pub .venue{color:var(--tan)}}
+.pub p{color:var(--ink-2);max-width:44em}
+@media (max-width:640px){.pub{grid-template-columns:1fr;padding:28px 22px;gap:18px}}
+
+/* skills */
+.skills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px}
+.skill{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:20px;padding:22px 0;border-top:1px solid var(--line)}
+.skill h3{font-size:17px;font-weight:600;color:var(--teal-text);line-height:1.4}
+.skill p{color:var(--ink-2);font-size:16px}
+@media (max-width:900px){.skills{grid-template-columns:1fr}}
+@media (max-width:520px){.skill{grid-template-columns:1fr;gap:6px}}
+
+/* education */
+.edu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.edu > div{padding:28px;border:1px solid var(--line)}
+.edu h3{font-size:21px;margin-bottom:8px}
+.edu p{color:var(--ink-2)}
+.edu .when{color:var(--ink-3);font-size:14px;margin-top:10px}
+@media (max-width:720px){.edu{grid-template-columns:1fr}}
+
+/* contact */
+
+.contact h2{font-size:clamp(36px,5.4vw,68px);max-width:14em}
+.contact .lede{margin-top:20px}
+.mail{
+  display:inline-block;margin-top:40px;font-family:"Chakra Petch",sans-serif;font-weight:600;
+  font-size:clamp(22px,3.6vw,42px);color:var(--peach);text-decoration:none;
+  border-bottom:2px solid currentColor;padding-bottom:4px;overflow-wrap:anywhere;
+}
+:root[data-theme="light"] .mail{color:var(--teal)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .mail{color:var(--teal)}}
+.mail:hover{color:var(--tan)}
+.links{display:flex;flex-wrap:wrap;gap:12px;margin-top:40px}
+.where{margin-top:32px;color:var(--ink-3)}
+
+[hidden]{display:none !important}
+nav a[aria-current="page"]{color:var(--ink)}
+.more{margin-top:48px}
+
+/* projects page */
+.p-hero{padding:56px 0 40px;position:relative;isolation:isolate;overflow:hidden}
+.p-hero::before{content:"";position:absolute;z-index:-1;inset:-30% -10% -20% 45%;background:radial-gradient(40% 50% at 70% 30%,var(--glow-blue),transparent 70%),radial-gradient(30% 40% at 40% 80%,var(--glow-orange),transparent 70%);filter:blur(40px);pointer-events:none}
+.back{color:var(--ink-2);text-decoration:none;font-size:15px}
+.back:hover{color:var(--ink)}
+.p-hero h1{font-size:clamp(52px,8vw,96px);font-weight:700;margin:28px 0 18px;line-height:.95}
+.p-hero .lede{max-width:38em}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:36px}
+.chip{font:500 15px "IBM Plex Sans",system-ui,sans-serif;padding:8px 16px;border:1px solid var(--line-strong);background:transparent;color:var(--ink-2);cursor:pointer;transition:background .2s,color .2s}
+.chip:hover{color:var(--ink);border-color:var(--ink-2)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cases{padding:16px 0 80px}
+.case{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;padding:64px 0;border-top:1px solid var(--line)}
+.cases .case:first-child{border-top:0}
+.viz{position:relative;align-self:start;border:1px solid var(--line);background:var(--surface);aspect-ratio:4/3;box-shadow:0 30px 80px -40px var(--glow-blue)}
+.viz::before,.viz::after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--teal-text)}
+.viz::before{top:-6px;left:-6px;border-right:0;border-bottom:0}
+.viz::after{bottom:-6px;right:-6px;border-left:0;border-top:0}
+.viz svg{display:block;width:100%;height:100%}
+.viz .s{fill:none;stroke:var(--ink-3);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.viz .a{stroke:var(--peach)} .viz .b{stroke:var(--teal-text)}
+.viz .fa{fill:var(--peach);stroke:none} .viz .fb{fill:var(--teal-text);stroke:none} .viz .fl{fill:var(--line);stroke:none}
+.viz .jt{fill:var(--surface)} .viz .dash{stroke-dasharray:6 7}
+.case-meta{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;color:var(--ink-3);font-size:14px}
+.num{font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:16px;color:var(--peach)}
+:root[data-theme="light"] .num{color:var(--tan)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .num{color:var(--tan)}}
+.status{padding:3px 10px;border:1px solid currentColor;color:var(--teal-text);font-size:13px}
+.case h2{font-size:clamp(28px,3.4vw,42px);margin:16px 0 16px}
+.case .summary{font-size:18px;max-width:36em}
+.case-cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px}
+.case h3{font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;font-weight:600;color:var(--teal-text);margin-bottom:10px}
+.case-cols p{color:var(--ink-2);font-size:16px}
+.case-cols ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;color:var(--ink-2);font-size:16px}
+.case-cols li{position:relative;padding-left:20px}
+.case-cols li::before{content:"";position:absolute;left:0;top:.72em;width:8px;height:2px;background:var(--tan)}
+.case-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.p-cta{padding:80px 0;border-top:1px solid var(--line);background:radial-gradient(60% 90% at 90% 0%,var(--glow-blue),transparent 70%),var(--bg-deep)}
+.p-cta h2{font-size:clamp(32px,4.4vw,54px);max-width:16em}
+.p-cta .cta{margin-top:32px}
+@media (max-width:900px){.case{grid-template-columns:1fr;gap:32px;padding:48px 0}}
+@media (max-width:620px){.case-cols{grid-template-columns:1fr;gap:24px}}
+
+footer{padding:28px 0;border-top:1px solid var(--line);color:var(--ink-3);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.theme-toggle{background:none;border:1px solid var(--line-strong);color:var(--ink-2);font:inherit;font-size:14px;padding:6px 12px;cursor:pointer}
+.theme-toggle:hover{color:var(--ink);border-color:var(--ink-2)}
+
+/* single load sequence */
+@media (prefers-reduced-motion: no-preference){
+  .hero .reveal{opacity:0;transform:translateY(14px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+  .hero .reveal:nth-child(2){animation-delay:.08s}
+  .hero .reveal:nth-child(3){animation-delay:.16s}
+  .hero .reveal:nth-child(4){animation-delay:.24s}
+  .hero .reveal:nth-child(5){animation-delay:.32s}
+  @keyframes rise{to{opacity:1;transform:none}}
+}
+
+/* Portfolio content enhancements */
+.proof-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-block:1px solid var(--line);margin-top:36px}
+.proof-strip div{padding:19px 18px;border-right:1px solid var(--line)}.proof-strip div:last-child{border-right:0}
+.proof-strip strong{display:block;font:600 clamp(19px,2.4vw,29px) "Chakra Petch",sans-serif;color:var(--peach)}
+.proof-strip span{font-size:13px;color:var(--ink-2)}
+.arch-flow{display:flex;align-items:stretch;flex-wrap:wrap;gap:12px;margin:24px 0}
+.arch-step{flex:1 1 155px;min-width:0;padding:18px;border-top:2px solid var(--teal-text);background:var(--surface)}
+.arch-step small{display:block;color:var(--ink-3);font-size:12px;margin-bottom:8px;letter-spacing:.08em;text-transform:uppercase}
+.arch-step strong{font-family:"Chakra Petch",sans-serif;font-size:18px}
+.arch-step p{color:var(--ink-2);font-size:14px;margin-top:8px}
+.detail-note{margin-top:22px;padding:18px 20px;border-left:2px solid var(--tan);background:var(--surface);color:var(--ink-2);font-size:15px}
+.detail-note strong{color:var(--ink)}
+.case .detail-note{margin-top:22px}
+.resume-link{margin-top:16px;display:inline-flex}
+#approach .sec-head{margin-bottom:26px}
+@media(max-width:650px){.proof-strip{grid-template-columns:1fr}.proof-strip div{border-right:0;border-bottom:1px solid var(--line)}.proof-strip div:last-child{border-bottom:0}}
+</style>
 </head>
-
 <body>
-
-  
-  <!-- ======= Mobile nav toggle button ======= -->
-  <i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
-
-  <!-- ======= Header ======= -->
-  <header id="header">
-    <div class="d-flex flex-column">
-
-      <div class="profile">
-        <img src="assets\img\1705403309002.jpeg" alt="" class="img-fluid rounded-circle">
-        <h1 class="text-light"><a href="index.html">Melvin</a></h1>
-        <div class="social-links mt-3 text-center">
-          <a href="https://twitter.com/melvinsajith" class="twitter"><i class="bx bxl-twitter"></i></a>
-          <a href="https://github.com/Melvinsajith" class="github"><i class="bx bxl-github"></i></a>
-          <a href="https://www.instagram.com/melvin._.sajith/" class="instagram"><i class="bx bxl-instagram"></i></a>
-          <a href="https://www.youtube.com/@priotx" class="youtube"><i class="bx bxl-youtube"></i></a>
-
-          <a href="https://www.linkedin.com/in/melvinsajith/" class="linkedin"><i class="bx bxl-linkedin"></i></a>
-        </div>
-      </div>
-
-      <nav id="navbar" class="nav-menu navbar">
-        <ul>
-          <li><a href="#hero" class="nav-link scrollto active"><i class="bx bx-home"></i> <span>Home</span></a></li>
-          <li><a href="#about" class="nav-link scrollto"><i class="bx bx-user"></i> <span>About</span></a></li>
-          <li><a href="#resume" class="nav-link scrollto"><i class="bx bx-file-blank"></i> <span>Resume</span></a></li>
-          <!-- <li><a href="#portfolio" class="nav-link scrollto"><i class="bx bx-book-content"></i> <span>Portfolio</span></a></li> -->
-          <!-- <li><a href="#services" class="nav-link scrollto"><i class="bx bx-server"></i> <span>Services</span></a></li> -->
-          <li><a href="#contact" class="nav-link scrollto"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
-        </ul>
-      </nav><!-- .nav-menu -->
-    </div>
-  </header><!-- End Header -->
-
-  <!-- ======= Hero Section ======= -->
-  <section id="hero" class="d-flex flex-column justify-content-center align-items-center">
-    <div class="hero-container" data-aos="fade-in">
-      <h1>Melvin Sajith</h1>
-      <p>I'm <span class="typed" data-typed-items="Roboticist, Developer, Freelancer, YouTuber, Programmer"></span></p>
-    </div>
-  </section><!-- End Hero -->
-
-  <main id="main">
-
-    <!-- ======= About Section ======= -->
-    <section id="about" class="about">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>About</h2>
-          <p>I am a Roboticist and robotics software Developer, 
-
-            I am a dedicated professional with a deep passion for the fields of IoT, Robotics, and Artificial Intelligence. Currently serving as the Head of IoT and Robotics at Karunyahacks, I am committed to driving innovation and advancing technology. With a diverse skill set and extensive experience, I am on a mission to transform India with robotics and AI.</p>
-        </div>
-
-        <div class="row">
-          <div class="col-lg-4" data-aos="fade-right">
-            <img src="assets\img\hero.jpg" class="img-fluid" alt="">
-          </div>
-          <div class="col-lg-8 pt-4 pt-lg-0 content" data-aos="fade-left">
-            <h3>Roboticist &amp; Robotics Software Developer.</h3>
-            <p class="fst-italic">
-              I am on a mission to transform India with robotics 
-            </p>
-            <div class="row">
-              <div class="col-lg-6">
-                <ul>
-                  <li><i class="bi bi-chevron-right"></i> <strong>Birthday:</strong> <span>20 March 2004</span></li>
-                  <!--<li><i class="bi bi-chevron-right"></i> <strong>Website:</strong> <span>www.example.com</span></li>-->
-                  <li><i class="bi bi-chevron-right"></i> <strong>Phone:</strong> <span>+919847410035</span></li>
-                  <li><i class="bi bi-chevron-right"></i> <strong>City:</strong> <span>Ernakulam Kerala</span></li>
-                </ul>
-              </div>
-              <div class="col-lg-6">
-                <ul>
-                  <li><i class="bi bi-chevron-right"></i> <strong>Age:</strong> <span>20</span></li>
-                  <li><i class="bi bi-chevron-right"></i> <strong>Degree:</strong> <span> Bachelor of technology</span></li>
-                  <li><i class="bi bi-chevron-right"></i> <strong>Email:</strong> <span>melvinsajith20@gmail.com</span></li>
-                 <!-- <li><i class="bi bi-chevron-right"></i> <strong>Freelance:</strong> <span>Available</span></li> -->
-                </ul>
-              </div>
-            </div>
-            <!-- <p>
-              Officiis eligendi itaque labore et dolorum mollitia officiis optio vero. Quisquam sunt adipisci omnis et ut. Nulla accusantium dolor incidunt officia tempore. Et eius omnis.
-              Cupiditate ut dicta maxime officiis quidem quia. Sed et consectetur qui quia repellendus itaque neque. Aliquid amet quidem ut quaerat cupiditate. Ab et eum qui repellendus omnis culpa magni laudantium dolores.
-            </p> -->
-          </div>
-        </div>
-
-      </div>
-    </section><!-- End About Section -->
-
-    <!-- ======= Facts Section ======= 
-    <section id="facts" class="facts">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Facts</h2>
-          <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>
-        </div>
-
-        <div class="row no-gutters">
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up">
-            <div class="count-box">
-              <i class="bi bi-emoji-smile"></i>
-              <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Happy Clients</strong> consequuntur quae</p>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="100">
-            <div class="count-box">
-              <i class="bi bi-journal-richtext"></i>
-              <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Projects</strong> adipisci atque cum quia aut</p>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="200">
-            <div class="count-box">
-              <i class="bi bi-headset"></i>
-              <span data-purecounter-start="0" data-purecounter-end="1453" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Hours Of Support</strong> aut commodi quaerat</p>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="300">
-            <div class="count-box">
-              <i class="bi bi-people"></i>
-              <span data-purecounter-start="0" data-purecounter-end="32" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Hard Workers</strong> rerum asperiores dolor</p>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section> End Facts Section -->
-
-    <!-- ======= Skills Section ======= -->
-    <section id="skills" class="skills section-bg">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Skills</h2>
-          <p>Interested and working on
-            Robotic Vision
-            Autonomous Navigation and Path Planning
-            Simultaneous Localization & Mapping (SLAM)
-            Machine Learning/ Deep Learning/ Reinforcement Learning for robotics 
-            
-            I'm passionate about pushing the boundaries of technology and fostering innovation. Let's connect to explore opportunities, collaborate on exciting projects, or discuss the latest developments in IoT, Robotics, and AI.</p>
-        </div>
-
-        <div class="row skills-content">
-
-          <div class="col-lg-6" data-aos="fade-up">
-            <div class="progress">
-              <span class="skill">Robotics <i class="val">90%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-            <div class="progress">
-              <span class="skill">Python <i class="val">90%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-
-            <div class="progress">
-              <span class="skill">C <i class="val">90%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-
-            <div class="progress">
-              <span class="skill">Java <i class="val">60%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-            <div class="progress">
-              <span class="skill">Computer Vision <i class="val">70%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-            <div class="progress">
-              <span class="skill">Linux <i class="val">80%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-
-            <div class="progress">
-              <span class="skill">Robot Operating System (ROS) <i class="val">50%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-
-            <div class="progress">
-              <span class="skill">WordPress/CMS <i class="val">90%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-
-            <div class="progress">
-              <span class="skill">Arduino <i class="val">100%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-            <div class="progress">
-              <span class="skill">C++ <i class="val">60%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-            <div class="progress">
-              <span class="skill"> 3D Modeling <i class="val">60%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-            <div class="progress">
-              <span class="skill"> Embedded Systems <i class="val">75%</i></span>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-    </section><!-- End Skills Section -->
-
-    <!-- ======= Resume Section ======= -->
-    <section id="resume" class="resume">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Resume</h2>
-          <!-- <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p> -->
-        </div>
-
-        <div class="row">
-          <div class="col-lg-6" data-aos="fade-up">
-            <h3 class="resume-title">Sumary</h3>
-            <div class="resume-item pb-0">
-              <h4>Melvin Sajith</h4>
-              <p><em>I am a Roboticist with three years of experience in the field of robotics and AI
-                I am a dedicated professional with a deep passion for the fields of IoT, Robotics, and Artificial Intelligence.
-                Currently serving as the Head of IoT and Robotics at Karunyahacks, I am committed to driving innovation and
-                advancing technology. With a diverse skill set and extensive experience, I am on a mission to transform India with
-                robotics and AI</em></p>
-              <!-- <ul>
-                <li>Portland par 127,Orlando, FL</li>
-                <li>(123) 456-7891</li>
-                <li>alice.barkley@example.com</li>
-              </ul> -->
-            </div>
-            
-            
-            
-            <h3 class="resume-title">Education</h3>
-            <div class="resume-item">
-              <h4>Bachelor of Technology - BTech &amp;Computer Science</h4>
-              <h5>2022 - 2026</h5>
-              <p><em>Karunya Institute of Technology and Sciences, Coimbatore, Tamil Nadu, India</em></p>
-              <p>Student at Karunya University studying computer science and engineering ( Artificial  intelligence)</p>
-            </div>
-            <div class="resume-item">
-              <h4>High School 12th in Computer Science</h4>
-              <h5>2020 - 2022</h5>
-              <p><em>De Paul English Medium Higher Secondary School , Kerala, India</em></p>
-              <p>Completed 12th in Computer Science </p>
-            </div>
-            <div class="resume-item">
-              <h4>Middle School </h4>
-              <h5>2020</h5>
-              <p><em>Viswajyothi Public School , Kerala, India</em></p>
-              <p> Studied in Viswajyothi Public School till 10th Grade</p>
-            </div>
-             </div>
-             
-          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-            <h3 class="resume-title">Professional Experience</h3>
-            <div class="resume-item">
-              <h4>Head of Robotics Club</h4>
-              <h5>August 2023 - Present</h5>
-              <p><em>Karunya Institute of Technology and Sciences, Head of Robotics at Karunya Hacks ,Coimbatore, Tamil Nadu, India </em></p>
-              <ul>
-                <li>He currently serves as the Head of IoT and Robotics at Karunyahacks</li>
-                <li>Working as a team of 10 members to Build a Robotics Projects</li>
-                <li> Conducting Training and Workshops on Robotics to Students </li>
-                <li>Building Robotics Projects on ROS </li>
-              </ul>
-            </div>
-            <div class="resume-item">
-              <h4>KarunyaHacks</h4>
-              <h5>September 2022 - Present</h5>
-              <p><em>Coimbatore, Tamil Nadu, India</em></p>
-              <ul>
-                <li>Event managements , Event planning, Robotics trainer, Instructor, project works.</li>
-                <li>Conducted 4 Workshops and Training Programs</li>
-                <li>Build Projects and Worked as a Team</li>
-                <!-- <li></li> -->
-              </ul>
-            </div>
-            <div class="resume-item">
-              <h4>Roboticist Freelance </h4>
-              <h5>Dec 2021 - Jan 2023</h5>
-              <p><em>Remote</em></p>
-              <ul>
-                <li>Worked on multiple project on Robotics and IoT Based Devices  as a freelancer</li>
-                
-                <!-- <li></li> -->
-              </ul>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section><!-- End Resume Section -->
-
-    <!-- ======= Portfolio Section ======= -->
-    <!-- <section id="portfolio" class="portfolio section-bg">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Portfolio</h2>
-          <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>
-        </div>
-
-        <div class="row" data-aos="fade-up">
-          <div class="col-lg-12 d-flex justify-content-center">
-            <ul id="portfolio-flters">
-              <li data-filter="*" class="filter-active">All</li>
-              <li data-filter=".filter-app">App</li>
-              <li data-filter=".filter-card">Card</li>
-              <li data-filter=".filter-web">Web</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="row portfolio-container" data-aos="fade-up" data-aos-delay="100">
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/portfolio-1.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="assets/img/portfolio/portfolio-1.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="App 1"><i class="bx bx-plus"></i></a>
-                <a href="portfolio-details.html" title="More Details"><i class="bx bx-link"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-web">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/portfolio-2.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="assets/img/portfolio/portfolio-2.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Web 3"><i class="bx bx-plus"></i></a>
-                <a href="portfolio-details.html" title="More Details"><i class="bx bx-link"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/portfolio-3.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="assets/img/portfolio/portfolio-3.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="App 2"><i class="bx bx-plus"></i></a>
-                <a href="portfolio-details.html" title="More Details"><i class="bx bx-link"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/portfolio-4.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="assets/img/portfolio/portfolio-4.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 2"><i class="bx bx-plus"></i></a>
-                <a href="portfolio-details.html" title="More Details"><i class="bx bx-link"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-web">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/portfolio-5.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="assets/img/portfolio/portfolio-5.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Web 2"><i class="bx bx-plus"></i></a>
-                <a href="portfolio-details.html" title="More Details"><i class="bx bx-link"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/portfolio-6.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="assets/img/portfolio/portfolio-6.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="App 3"><i class="bx bx-plus"></i></a>
-                <a href="portfolio-details.html" title="More Details"><i class="bx bx-link"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/portfolio-7.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="assets/img/portfolio/portfolio-7.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 1"><i class="bx bx-plus"></i></a>
-                <a href="portfolio-details.html" title="More Details"><i class="bx bx-link"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/portfolio-8.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="assets/img/portfolio/portfolio-8.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3"><i class="bx bx-plus"></i></a>
-                <a href="portfolio-details.html" title="More Details"><i class="bx bx-link"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-web">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/portfolio-9.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="assets/img/portfolio/portfolio-9.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Web 3"><i class="bx bx-plus"></i></a>
-                <a href="portfolio-details.html" title="More Details"><i class="bx bx-link"></i></a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section>End Portfolio Section -->
-
-    <!-- ======= Services Section ======= -->
-    <!-- <section id="services" class="services">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Services</h2>
-          <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>
-        </div>
-
-        <div class="row">
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up">
-            <div class="icon"><i class="bi bi-briefcase"></i></div>
-            <h4 class="title"><a href="">Lorem Ipsum</a></h4>
-            <p class="description">Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bi bi-card-checklist"></i></div>
-            <h4 class="title"><a href="">Dolor Sitema</a></h4>
-            <p class="description">Minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat tarad limino ata</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="200">
-            <div class="icon"><i class="bi bi-bar-chart"></i></div>
-            <h4 class="title"><a href="">Sed ut perspiciatis</a></h4>
-            <p class="description">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="300">
-            <div class="icon"><i class="bi bi-binoculars"></i></div>
-            <h4 class="title"><a href="">Magni Dolores</a></h4>
-            <p class="description">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="400">
-            <div class="icon"><i class="bi bi-brightness-high"></i></div>
-            <h4 class="title"><a href="">Nemo Enim</a></h4>
-            <p class="description">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="500">
-            <div class="icon"><i class="bi bi-calendar4-week"></i></div>
-            <h4 class="title"><a href="">Eiusmod Tempor</a></h4>
-            <p class="description">Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi</p>
-          </div>
-        </div>
-
-      </div>
-    </section>End Services Section -->
-
-    <!-- ======= Testimonials Section ======= -->
-    <!-- <section id="testimonials" class="testimonials section-bg">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Testimonials</h2>
-          <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>
-        </div>
-
-        <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
-          <div class="swiper-wrapper">
-
-            <div class="swiper-slide">
-              <div class="testimonial-item" data-aos="fade-up">
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-                <img src="assets/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">
-                <h3>Saul Goodman</h3>
-                <h4>Ceo &amp; Founder</h4>
-              </div>
-            </div>End testimonial item -->
-
-            <!-- <div class="swiper-slide">
-              <div class="testimonial-item" data-aos="fade-up" data-aos-delay="100">
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-                <img src="assets/img/testimonials/testimonials-2.jpg" class="testimonial-img" alt="">
-                <h3>Sara Wilsson</h3>
-                <h4>Designer</h4>
-              </div>
-            </div>End testimonial item -->
-
-            <!-- <div class="swiper-slide">
-              <div class="testimonial-item" data-aos="fade-up" data-aos-delay="200">
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-                <img src="assets/img/testimonials/testimonials-3.jpg" class="testimonial-img" alt="">
-                <h3>Jena Karlis</h3>
-                <h4>Store Owner</h4>
-              </div>
-            </div>End testimonial item -->
-
-            <!-- <div class="swiper-slide">
-              <div class="testimonial-item" data-aos="fade-up" data-aos-delay="300">
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-                <img src="assets/img/testimonials/testimonials-4.jpg" class="testimonial-img" alt="">
-                <h3>Matt Brandon</h3>
-                <h4>Freelancer</h4>
-              </div>
-            </div>End testimonial item -->
-
-            <!-- <div class="swiper-slide">
-              <div class="testimonial-item" data-aos="fade-up" data-aos-delay="400">
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-                <img src="assets/img/testimonials/testimonials-5.jpg" class="testimonial-img" alt="">
-                <h3>John Larson</h3>
-                <h4>Entrepreneur</h4>
-              </div>
-            </div>End testimonial item -->
-
-          <!-- </div>
-          <div class="swiper-pagination"></div>
-        </div>
-
-      </div>
-    </section>End Testimonials Section -->
-
-    <!-- ======= Contact Section ======= -->
-    <section id="contact" class="contact">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Contact</h2>
-          <p> Contact Me for any work relayed to Robotics.
-
-            Feel Free to send me a DM</p>
-        </div>
-
-        <div class="row" data-aos="fade-in">
-
-          <div class="col-lg-5 d-flex align-items-stretch">
-            <div class="info">
-             
-
-              <div class="email">
-                <i class="bi bi-envelope"></i>
-                <h4>Email:</h4>
-                <p>melvinSajith20@gmail.com</p>
-              </div>
-              <div class="linkedin">
-                <!-- <i class="bx bxl-linkedin"></i> -->
-                <a href="https://www.linkedin.com/in/melvinsajith/" class="linkedin"><i class="bx bxl-linkedin"></i></a>
-                <h4>Linkedin</h4>
-                <p>www.linkedin.com/in/melvinsajith</p>
-
-              </div>
-
-              <!-- <div class="phone">
-                <i class="bi bi-phone"></i>
-                <h4>Call:</h4>
-                <p>+1 5589 55488 55s</p>
-              </div> -->
-
-              <!-- <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621" frameborder="0" style="border:0; width: 100%; height: 290px;" allowfullscreen></iframe>
-            </div>
-
-          </div>
-
-          <div class="col-lg-7 mt-5 mt-lg-0 d-flex align-items-stretch">
-            <form action="forms/contact.php" method="post" role="form" class="php-email-form">
-              <div class="row">
-                <div class="form-group col-md-6">
-                  <label for="name">Your Name</label>
-                  <input type="text" name="name" class="form-control" id="name" required>
-                </div>
-                <div class="form-group col-md-6">
-                  <label for="name">Your Email</label>
-                  <input type="email" class="form-control" name="email" id="email" required>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="name">Subject</label>
-                <input type="text" class="form-control" name="subject" id="subject" required>
-              </div>
-              <div class="form-group">
-                <label for="name">Message</label>
-                <textarea class="form-control" name="message" rows="10" required></textarea>
-              </div>
-              <div class="my-3">
-                <div class="loading">Loading</div>
-                <div class="error-message"></div>
-                <div class="sent-message">Your message has been sent. Thank you!</div>
-              </div>
-              <div class="text-center"><button type="submit">Send Message</button></div>
-            </form>
-          </div>
-
-        </div>
-
-      </div> -->
-    </section><!-- End Contact Section -->
-
-  </main>
-
-  <!-- ======= Footer ======= -->
-  <!-- <footer id="footer">
-    <div class="container">
-      <div class="copyright">
-        &copy; Copyright <strong><span>iPortfolio</span></strong>
-      </div>
-      <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/ -->
-      <!--  Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-      </div>
-    </div>
-  </footer> -->
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-  <script src="assets/vendor/typed.js/typed.umd.js"></script>
-  <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="assets/js/main.js"></script>
-
+<header>
+<div class="wrap bar">
+<a aria-label="Melvin Sajith, back to top" class="mark" href="#top">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 32 32"><path d="M16 3 28 10v12L16 29 4 22V10Z"></path><path d="M16 3v26M4 10l24 12M28 10 4 22"></path></svg>
+      Melvin Sajith
+    </a>
+<nav aria-label="Main">
+<ul>
+<li><a href="#approach">Architecture</a></li><li><a data-nav="projects" href="#/projects">Projects</a></li>
+<li><a href="#/linkedin" data-nav="linkedin">LinkedIn</a></li><li><a href="#/youtube" data-nav="youtube">YouTube</a></li><li><a href="#teaching">Teaching</a></li><li><a href="#experience">Experience</a></li>
+<li><a href="#skills">Skills</a></li>
+<li><a href="#contact">Contact</a></li>
+</ul>
+</nav>
+<a class="btn primary" href="#contact">Hire me</a>
+</div>
+</header>
+<main class="view" id="top">
+<div class="hero">
+<div class="wrap hero-grid">
+<div>
+<p class="hello reveal">Hi, I’m</p>
+<h1 class="reveal"><span>Melvin</span><span>Sajith</span></h1>
+<p class="role reveal">Robotics Software Engineer</p>
+<p class="lede reveal">I build robots and teach the next generation of ROS 2 developers. I build the software that helps robots perceive, navigate and act. My work spans ROS 2 autonomous mobile robots, SLAM and Nav2 navigation, MoveIt 2 manipulation, real-time Android robot control, and integration with LiDAR, cameras and embedded hardware.</p>
+<div class="cta reveal">
+<a class="btn primary" href="#work">See my projects</a>
+<a class="btn" href="#contact">Get in touch</a>
+<a class="btn" href="Melvin_Sajith_Resume.pdf">Download résumé (PDF)</a></div><div aria-label="Portfolio highlights" class="proof-strip"><div><strong>ROS 2</strong><span>Navigation, control &amp; integration</span></div><div><strong>4 projects</strong><span>Apps, AMRs, manipulation &amp; research</span></div><div><strong>IC2NC 2025</strong><span>Hospital AMR research publication</span></div></div>
+</div>
+<figure class="scope" style="margin:0">
+<span class="c3"></span><span class="c4"></span>
+<div class="scope-frame">
+<canvas aria-label="Animation of a robot building an occupancy map with its LiDAR as it drives through a floor plan." id="map" role="img"></canvas>
+</div>
+<div aria-hidden="true" class="readout">
+<span>x<b id="rx">0.00 m</b></span>
+<span>y<b id="ry">0.00 m</b></span>
+<span>heading<b id="rt">0°</b></span>
+<span>mapped<b id="rm">0%</b></span>
+</div>
+<figcaption class="caption">Illustrative simulation: an AMR exploring a floor plan with 360° LiDAR-style scans and an evolving occupancy map (not a live robot feed).</figcaption>
+</figure>
+</div>
+</div>
+<section id="about">
+<div class="wrap">
+<div class="sec-head">
+<h2>What I work on</h2>
+<div>
+<p>I’m a robotics software engineer with deep knowledge of ROS 2, autonomous navigation, SLAM, motion planning and robot kinematics. I’ve worked on autonomous mobile robots for hospitals and restaurants, a pick-and-place robot arm with its own digital twin, and an Android app that controls and monitors ROS 2 robots in real time. I’m skilled in Python and C++, Nav2, SLAM Toolbox and MoveIt 2, Gazebo and RViz simulation, computer vision with OpenCV, and integrating LiDAR, IMUs, cameras and embedded boards like Jetson Nano and Raspberry Pi. Today I build robot software at I HUB Robotics in Kochi and mentor new ROS developers.</p>
+<a class="btn" href="https://in.linkedin.com/in/melvinsajith" rel="noopener" style="margin-top:24px" target="_blank">Connect on LinkedIn</a>
+</div>
+</div>
+<div class="focus">
+<div>
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 40 40"><circle cx="20" cy="20" r="4"></circle><circle cx="20" cy="20" r="11" stroke-dasharray="3 4"></circle><circle cx="20" cy="20" r="18" stroke-dasharray="2 5"></circle><path d="M20 20 34 9"></path></svg>
+<h3>Autonomous navigation</h3>
+<p>SLAM, localization and path planning for AMRs and AGVs with SLAM Toolbox and Nav2, fused from LiDAR, IMU and wheel odometry.</p>
+</div>
+<div>
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 40 40"><path d="M6 34h14"></path><path d="M13 34V26l8-10 9 4"></path><circle cx="13" cy="26" r="2.5"></circle><circle cx="21" cy="16" r="2.5"></circle><path d="M30 20l4-4M30 20l4 4"></path></svg>
+<h3>Manipulation and digital twins</h3>
+<p>Robot arms modelled in URDF and Xacro, motion planning in MoveIt 2, and Gazebo twins that mirror the real hardware for safe testing.</p>
+</div>
+<div>
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 40 40"><rect height="32" rx="3" width="18" x="11" y="4"></rect><path d="M17 31h6"></path><circle cx="20" cy="17" r="5"></circle><path d="M20 12v-2M20 24v-2M15 17h-2M27 17h-2"></path></svg>
+<h3>Perception and robot interfaces</h3>
+<p>Vision with OpenCV and Grounding DINO on RGB-D data, plus Android and desktop tools for teleoperation and live robot monitoring.</p>
+</div>
+</div>
+</div>
+</section><section id="approach"><div class="wrap"><div class="sec-head"><h2>How I build robot systems</h2><p>From sensor data to safe motion: a typical ROS 2 navigation stack, with the components and interfaces I work on.</p></div><div aria-label="Robot navigation architecture" class="arch-flow"><div class="arch-step"><small>01 / Sensing</small><strong>LiDAR + odometry</strong><p>Laser scans, IMU data and wheel feedback enter the ROS 2 graph.</p></div><div class="arch-step"><small>02 / State</small><strong>TF2 + localization</strong><p>Coordinate frames and pose estimation connect the robot to its map.</p></div><div class="arch-step"><small>03 / Mapping</small><strong>SLAM Toolbox</strong><p>Generate an occupancy map from sensor observations.</p></div><div class="arch-step"><small>04 / Planning</small><strong>Nav2</strong><p>Plan routes, handle obstacles and execute waypoint goals.</p></div><div class="arch-step"><small>05 / Control</small><strong>cmd_vel + feedback</strong><p>Command the mobile base and monitor robot state.</p></div></div><p class="caption">Illustrative system architecture, not a claim that every project uses the identical pipeline.</p></div></section>
+<section id="work">
+<div class="wrap">
+<div class="sec-head">
+<h2>Selected work</h2>
+<p>Robots I’ve built, published on, and the software that runs them.</p>
+</div>
+<div class="projects">
+<article class="proj featured">
+<div class="meta">
+<h3>DIO Robot Connect</h3>
+            Universal ROS 2 controller for Android, 2026<br/>
+<a href="https://github.com/Melvinsajith/ROS2-Android-Control-Hub" rel="noopener" target="_blank">View on GitHub</a>
+</div>
+<div>
+<ul>
+<li>An Android app that controls and monitors any ROS 2 mobile robot, built with Kotlin, Jetpack Compose and Material 3.</li>
+<li>Talks to ROS 2 topics and services over WebSockets through rosbridge_server, in both directions.</li>
+<li>Streams LiDAR scans, live camera video, robot pose and the global map in real time.</li>
+<li>Sends Nav2 goal poses and waypoint routes, and shows navigation feedback as the robot drives.</li>
+<li>Safety first: dead-man control and emergency-stop handling built into teleoperation.</li>
+</ul>
+<ul aria-label="Tech used" class="stack">
+<li>Kotlin</li><li>Jetpack Compose</li><li>ROS 2</li><li>Nav2</li><li>WebSockets</li><li>rosbridge_server</li>
+</ul>
+</div>
+</article>
+<article class="proj">
+<div class="meta">
+<h3>Intelligent pick-and-place arm</h3>
+            Robotic arm with a digital twin, 2026, in progress<br/>
+<a href="https://github.com/Melvinsajith/Language-Conditioned-Pick-Place-Robot-Arm" rel="noopener" target="_blank">View on GitHub</a>
+</div>
+<div>
+<ul>
+<li>A physical robot arm paired with a simulated twin, so motion is validated in Gazebo before it runs on hardware.</li>
+<li>ROS 2 and MoveIt 2 handle control, motion planning and trajectory execution.</li>
+<li>The real arm and its twin are linked for side-by-side motion testing.</li>
+</ul>
+<ul aria-label="Tech used" class="stack">
+<li>ROS 2</li><li>MoveIt 2</li><li>URDF / Xacro</li><li>Python</li><li>C++</li><li>Gazebo</li><li>RViz 2</li>
+</ul>
+</div>
+</article>
+<article class="proj">
+<div class="meta">
+<h3>Autonomous restaurant service robot</h3>
+            Jan – Apr 2025<br/>
+<a href="https://github.com/Melvinsajith/ROS-2-Based-Autonomous-Service-Robot-for-Restaurants" rel="noopener" target="_blank">View on GitHub</a>
+</div>
+<div>
+<ul>
+<li>A modular AMR in ROS 2 Humble and Gazebo Classic 11 that maps a dining room and delivers to tables on its own.</li>
+<li>SLAM Toolbox builds the map; Nav2 plans paths to predefined delivery points.</li>
+<li>A Python Tkinter control panel for managing delivery waypoints, teleoperation and diagnostics.</li>
+<li>In a previously reported 10 × 10 m simulation: 95% navigation success without dynamic obstacles, 85% with dynamic obstacles, and approximately 30 seconds average delivery time per table.</li></ul>
+<ul aria-label="Tech used" class="stack">
+<li>ROS 2 Humble</li><li>Gazebo Classic 11</li><li>Nav2</li><li>SLAM Toolbox</li><li>Python</li><li>Tkinter</li>
+</ul>
+</div>
+</article>
+</div>
+<div class="more"><a class="btn primary" href="#/projects">View all projects</a></div>
+</div>
+</section>
+<section id="research">
+<div class="wrap">
+<div class="pub">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 56 56"><path d="M12 6h24l10 10v34H12Z"></path><path d="M36 6v10h10"></path><path d="M19 26h20M19 33h20M19 40h12"></path></svg>
+<div>
+<h3>An Integrated Autonomous Mobile Robot for Smart Hospital Logistics and Patient Monitoring</h3>
+<p class="venue">Published at IC2NC 2025, International Conference on NexGen Networks and Cybernetics</p>
+<p>An AI-powered AMR that combines ROS 2 navigation, SLAM, vision-based perception and speech recognition to deliver supplies around a hospital and monitor patients without contact.</p>
+<a class="btn" href="https://www.researchgate.net/publication/400892245_An_Integrated_Autonomous_Mobile_Robot_for_Smart_Hospital_Logistics_and_Patient_Monitoring" rel="noopener" style="margin-top:24px" target="_blank">Read the paper on ResearchGate</a>
+<a class="btn" href="https://github.com/Melvinsajith/SMART-AUTONOMOUS-MOBILE-ROBOT-FOR-HOSPITAL" rel="noopener" style="margin-top:24px;margin-left:8px" target="_blank">View on GitHub</a>
+</div>
+</div>
+</div>
+</section>
+<section id="teaching"><div class="wrap"><div class="sec-head"><h2>Teaching robotics &amp; ROS 2</h2><p>Alongside building robotic systems, I teach practical robotics: from the first ROS 2 node to autonomous navigation and hardware integration.</p></div><div class="focus"><div><h3>ROS 2 fundamentals</h3><p>Hands-on instruction in Ubuntu, ROS 2 workspaces, packages, nodes, topics, services, actions and launch files.</p></div><div><h3>Build an autonomous robot</h3><p>Guide learners through URDF/Xacro, TF2, Gazebo, RViz 2, LiDAR, SLAM Toolbox and Nav2 for mapping and navigation.</p></div><div><h3>Real hardware &amp; mentoring</h3><p>Teach Arduino, embedded computing, sensors, Python and C++, with debugging practice and project-based mentorship at I HUB Robotics.</p></div></div><div class="cta"><a class="btn primary" href="#/youtube">Explore my robotics videos</a><a class="btn" href="mailto:melvinsajith20@gmail.com?subject=Robotics%20and%20ROS%202%20training">Enquire about training</a></div></div></section>
+<section id="experience">
+<div class="wrap">
+<div class="sec-head">
+<h2>Experience</h2>
+<p>From leading robotics workshops to shipping navigation software on the job.</p>
+</div>
+<ol class="timeline">
+<li class="job now">
+<div>
+<h3>Robotics Engineer</h3>
+<p class="org">I HUB Robotics</p>
+<p class="when">Jul 2026 – present, Kochi, on-site</p>
+</div>
+<ul>
+<li>Build robot-control workflows and autonomous software pipelines in ROS 2 and Python.</li>
+<li>Develop motion-control components and Gazebo simulation environments.</li>
+<li>Integrate software with LiDAR, IMUs, cameras, actuators and embedded computers.</li>
+<li>Ship computer vision features with OpenCV and AI inference pipelines.</li>
+<li>Mentor students and junior developers in ROS 2, robotics architecture, Arduino and embedded AI, and write the training guides they learn from.</li>
+</ul>
+</li>
+<li class="job">
+<div>
+<h3>ROS Intern</h3>
+<p class="org">KarthiKesh Robotics Pvt. Ltd.</p>
+<p class="when">Apr – Jun 2024, Madurai, hybrid</p>
+</div>
+<ul>
+<li>Built and tested AMR simulation workflows in ROS 2 and Gazebo for indoor navigation.</li>
+<li>Fused LiDAR, IMU and wheel odometry with SLAM Toolbox and Nav2 for mapping, localization and navigation.</li>
+<li>Debugged ROS node communication, serial hardware links and robot-control faults.</li>
+</ul>
+</li>
+<li class="job">
+<div>
+<h3>Head of IoT and Robotics</h3>
+<p class="org">KarunyaHacks</p>
+<p class="when">Jul 2023 – May 2024, Coimbatore</p>
+</div>
+<div>
+<ul>
+<li>Led hands-on workshops on Arduino, microcontrollers, Python and robotics fundamentals.</li>
+<li>Mentored student teams through hardware-software integration and project builds.</li>
+</ul>
+<p class="sub">Earlier as a team member (Sep 2022 – Jul 2023), helped run workshops on embedded systems, circuit design and Arduino.</p>
+</div>
+</li>
+</ol>
+</div>
+</section>
+<section id="skills">
+<div class="wrap">
+<div class="sec-head">
+<h2>Toolkit</h2>
+<p>The tools I reach for, from middleware to microcontrollers.</p>
+</div>
+<div class="skills">
+<div class="skill"><h3>Robotics middleware</h3><p>ROS 2 Humble and Jazzy, ROS, Nav2, SLAM Toolbox, MoveIt 2, TF2, rosbridge_server</p></div>
+<div class="skill"><h3>Navigation</h3><p>SLAM, localization, path planning, odometry, waypoint navigation, teleoperation, AMR and AGV systems</p></div>
+<div class="skill"><h3>Modelling and simulation</h3><p>URDF, Xacro, Gazebo Classic 11, RViz 2, PyBullet, kinematics, motion planning, digital twins</p></div>
+<div class="skill"><h3>Languages</h3><p>Python, C++, C, Bash, Java, Kotlin</p></div>
+<div class="skill"><h3>Hardware and sensors</h3><p>LiDAR, IMU, wheel encoders, RGB-D cameras, motor controllers, Jetson Nano, Raspberry Pi, Arduino, ESP32</p></div>
+<div class="skill"><h3>Computer vision</h3><p>OpenCV, PyTorch, Grounding DINO, object detection and localization, RGB-D processing, 3D projection</p></div>
+<div class="skill"><h3>Mobile</h3><p>Android, Jetpack Compose, Material 3, WebSockets, real-time robot monitoring</p></div>
+<div class="skill"><h3>Dev tools</h3><p>Ubuntu 22.04, Linux, Git, GitHub, FastAPI</p></div>
+</div>
+</div>
+</section>
+<section id="education">
+<div class="wrap">
+<div class="sec-head">
+<h2>Education</h2>
+<p></p>
+</div>
+<div class="edu">
+<div>
+<h3>Karunya Institute of Technology and Sciences</h3>
+<p>B.Tech in Computer Science and Engineering (Artificial Intelligence)</p>
+<p class="when">2022 – 2026, Tamil Nadu</p>
+</div>
+<div>
+<h3>De Paul English Medium Higher Secondary School</h3>
+<p>Higher Secondary Education, Computer Science</p>
+<p class="when">2020 – 2022, Kerala</p>
+</div>
+</div>
+</div>
+</section>
+<section class="contact" id="contact">
+<div class="wrap">
+<h2>Have a robot that needs to find its way?</h2>
+<p class="lede">I’m open to robotics software roles, collaborations and freelance ROS 2 work. Tell me what you’re building.</p>
+<a class="mail" href="mailto:melvinsajith20@gmail.com">melvinsajith20@gmail.com</a>
+<div class="links">
+<a class="btn" href="https://in.linkedin.com/in/melvinsajith" rel="noopener" target="_blank">LinkedIn</a>
+<a class="btn" href="https://github.com/Melvinsajith" rel="noopener" target="_blank">GitHub</a>
+<a class="btn" href="https://www.youtube.com/channel/UC0Nm0O9WIpnPzETvmGoI0jA" rel="noopener" target="_blank">YouTube</a>
+<a class="btn" href="tel:+919847410035">+91 98474 10035</a>
+<a class="btn" href="Melvin_Sajith_Resume.pdf">Download résumé</a></div>
+<p class="where">Based in Ernakulam, Kerala, India</p>
+</div>
+</section>
+</main>
+<main class="view" hidden="" id="projects-page">
+<div class="p-hero">
+<div class="wrap">
+<a class="back" href="#top">← Back to home</a>
+<h1 tabindex="-1">Projects</h1>
+<p class="lede">A closer look at the robots and robot software I’ve built: what each one does, how it works, and the tools behind it.</p>
+<div aria-label="Filter projects" class="chips" role="group">
+<button aria-pressed="true" class="chip" data-f="all" type="button">All</button>
+<button aria-pressed="false" class="chip" data-f="nav" type="button">Navigation</button>
+<button aria-pressed="false" class="chip" data-f="manip" type="button">Manipulation</button>
+<button aria-pressed="false" class="chip" data-f="apps" type="button">Robot apps</button>
+<button aria-pressed="false" class="chip" data-f="research" type="button">Research</button>
+</div>
+</div>
+</div>
+<div class="wrap cases">
+<article class="case" data-cat="apps nav">
+<div class="viz">
+<svg aria-hidden="true" viewbox="0 0 400 300">
+<rect class="s" height="256" rx="16" width="110" x="70" y="22"></rect>
+<rect class="fl" height="120" width="90" x="80" y="48"></rect>
+<path class="s a" d="M88 60h40v30h32v66H88z"></path>
+<path class="s b" d="M100 142l18-30 22 6 12-34" stroke-dasharray="4 5"></path>
+<circle class="fb" cx="152" cy="84" r="5"></circle>
+<rect class="s" height="10" rx="5" width="70" x="90" y="182"></rect>
+<circle class="s" cx="125" cy="232" r="26"></circle>
+<circle class="fa" cx="132" cy="225" r="9"></circle>
+<path class="s b" d="M200 122a30 30 0 0 1 0 56M214 106a52 52 0 0 1 0 88"></path>
+<circle class="s b dash" cx="300" cy="150" r="64"></circle>
+<rect class="s" height="42" rx="8" width="76" x="262" y="130"></rect>
+<circle class="s jt" cx="278" cy="180" r="9"></circle>
+<circle class="s jt" cx="322" cy="180" r="9"></circle>
+<circle class="fb" cx="300" cy="122" r="8"></circle>
+</svg>
+</div>
+<div>
+<div class="case-meta"><span class="num">01</span><span>2026</span><span class="status">Open source</span><span>Robot apps, Navigation</span></div>
+<h2>DIO Robot Connect</h2>
+<p class="summary">An Android control and monitoring interface for ROS 2 mobile robots using rosbridge_server. View sensors, teleoperate a compatible robot and send navigation goals from a phone.</p>
+<div class="case-cols">
+<div>
+<h3>How it works</h3>
+<p>The app talks to the robot over WebSockets through rosbridge_server, subscribing to ROS 2 topics and calling services in both directions. Topic names are configurable, so the same app works across different robots.</p>
+</div>
+<div>
+<h3>Key features</h3>
+<ul>
+<li>Real-time LiDAR visualization</li>
+<li>Live camera streaming</li>
+<li>Robot pose and global map view</li>
+<li>Nav2 goal poses and waypoint routes with live feedback</li>
+<li>Dead-man control and emergency stop</li>
+</ul>
+</div>
+</div>
+<ul aria-label="Tech used" class="stack"><li>Kotlin</li><li>Jetpack Compose</li><li>Material 3</li><li>ROS 2</li><li>Nav2</li><li>WebSockets</li><li>rosbridge_server</li></ul>
+<div class="detail-note"><strong>Engineering focus.</strong> ROS-to-mobile communication: configurable topic connections, live sensor visualization, navigation commands and safety-aware teleoperation.<p class="caption">Key implementation details from the supplied portfolio and résumé; validate on your hardware before describing the app as universally compatible.</p></div><div class="case-links"><a class="btn" href="https://github.com/Melvinsajith/ROS2-Android-Control-Hub" rel="noopener" target="_blank">View on GitHub</a></div>
+</div>
+</article>
+<article class="case" data-cat="manip">
+<div class="viz">
+<svg aria-hidden="true" viewbox="0 0 400 300">
+<path class="s" d="M30 262h340"></path>
+<path class="s b dash" d="M150 230 108 150 58 170"></path>
+<circle class="s b jt" cx="108" cy="150" r="7"></circle>
+<rect class="s" height="24" rx="4" width="60" x="120" y="238"></rect>
+<path class="s" d="M150 230 190 140 270 118"></path>
+<circle class="s jt" cx="150" cy="230" r="9"></circle>
+<circle class="s jt" cx="190" cy="140" r="9"></circle>
+<circle class="s jt" cx="270" cy="118" r="7"></circle>
+<path class="s" d="M270 125v20M260 145h20M260 145v12M280 145v12"></path>
+<path class="s a dash" d="M270 160Q306 196 271 228"></path>
+<rect class="fa" height="28" width="30" x="256" y="234"></rect>
+</svg>
+</div>
+<div>
+<div class="case-meta"><span class="num">02</span><span>2026</span><span class="status">In progress</span><span>Manipulation</span></div>
+<h2>Intelligent pick-and-place arm</h2>
+<p class="summary">A robotic arm paired with a digital twin for pick-and-place tasks, so every motion is tested in simulation before it runs on real hardware.</p>
+<div class="case-cols">
+<div>
+<h3>How it works</h3>
+<p>The arm is modelled in URDF and Xacro. MoveIt 2 plans and executes its trajectories, and a Gazebo twin mirrors the physical arm so the two can be tested side by side.</p>
+</div>
+<div>
+<h3>Key features</h3>
+<ul>
+<li>Motion planning and trajectory execution with MoveIt 2</li>
+<li>Simulation-first validation in Gazebo and RViz 2</li>
+<li>Physical arm linked to its simulated counterpart</li>
+<li>Hardware integration for real pick-and-place</li>
+</ul>
+</div>
+</div>
+<ul aria-label="Tech used" class="stack"><li>ROS 2</li><li>MoveIt 2</li><li>URDF / Xacro</li><li>Python</li><li>C++</li><li>Gazebo</li><li>RViz 2</li></ul>
+<div class="detail-note"><strong>Engineering focus.</strong> Model the arm with URDF/Xacro, plan motion with MoveIt 2, and compare simulated and physical execution during iterative testing.<p class="caption">In progress: avoid implying production deployment or fully validated hardware synchronization.</p></div><div class="case-links"><a class="btn" href="https://github.com/Melvinsajith/Language-Conditioned-Pick-Place-Robot-Arm" rel="noopener" target="_blank">View on GitHub</a></div>
+</div>
+</article>
+<article class="case" data-cat="nav">
+<div class="viz">
+<svg aria-hidden="true" viewbox="0 0 400 300">
+<rect class="s" height="252" width="352" x="24" y="24"></rect>
+<path class="s" d="M24 100h70M94 24v44"></path>
+<circle class="s" cx="190" cy="76" r="18"></circle>
+<circle class="s" cx="300" cy="76" r="18"></circle>
+<circle class="s" cx="190" cy="212" r="18"></circle>
+<circle class="s" cx="300" cy="212" r="18"></circle>
+<circle class="s" cx="80" cy="216" r="18"></circle>
+<path class="s a dash" d="M58 62v82h188v68h28"></path>
+<circle class="s b" cx="300" cy="212" r="28"></circle>
+<circle class="fb" cx="246" cy="144" r="10"></circle>
+<path class="s b" d="M246 144h18"></path>
+</svg>
+</div>
+<div>
+<div class="case-meta"><span class="num">03</span><span>Jan – Apr 2025</span><span class="status">Open source</span><span>Navigation</span></div>
+<h2>Autonomous restaurant service robot</h2>
+<p class="summary">A modular mobile robot that maps a restaurant on its own and delivers orders to tables, built and tested end to end in simulation.</p>
+<div class="case-cols">
+<div>
+<h3>How it works</h3>
+<p>SLAM Toolbox builds the map of the dining room. Nav2 then localizes the robot on that map and plans paths to predefined delivery points, all running as modular ROS 2 Humble packages in Gazebo Classic 11.</p>
+</div>
+<div>
+<h3>Key features</h3>
+<ul>
+<li>Indoor mapping and localization</li>
+<li>Path planning to table delivery points</li>
+<li>Python Tkinter panel for waypoints, teleoperation and diagnostics</li>
+</ul>
+</div>
+</div>
+<ul aria-label="Tech used" class="stack"><li>ROS 2 Humble</li><li>Gazebo Classic 11</li><li>Nav2</li><li>SLAM Toolbox</li><li>Python</li><li>Tkinter</li></ul>
+<div class="detail-note"><strong>Simulation results.</strong> Previously reported for a 10 × 10 m Gazebo restaurant world: 95% successful navigation in obstacle-free trials; 85% with dynamic obstacles; approximately 30 s average delivery time per table.<p class="caption">Simulation figures are project-reported, not independently verified real-world performance. Add trial counts and methodology when available.</p></div><div class="case-links"><a class="btn" href="https://github.com/Melvinsajith/ROS-2-Based-Autonomous-Service-Robot-for-Restaurants" rel="noopener" target="_blank">View on GitHub</a></div>
+</div>
+</article>
+<article class="case" data-cat="research nav">
+<div class="viz">
+<svg aria-hidden="true" viewbox="0 0 400 300">
+<rect class="s" height="252" width="352" x="24" y="24"></rect>
+<path class="s" d="M24 120h120M184 120h116M330 120h46M24 180h120M184 180h192M140 24v96M260 24v96M140 180v96M260 180v96"></path>
+<rect class="s" height="30" rx="4" width="60" x="50" y="48"></rect>
+<rect class="s" height="30" rx="4" width="60" x="170" y="48"></rect>
+<rect class="s" height="30" rx="4" width="60" x="286" y="48"></rect>
+<rect class="s" height="30" rx="4" width="60" x="170" y="226"></rect>
+<rect class="s" height="30" rx="4" width="60" x="290" y="226"></rect>
+<path class="s a" d="M38 214h22l8-14 10 28 8-14h26"></path>
+<path class="s a dash" d="M40 150h160M236 150h79V96"></path>
+<circle class="s b" cx="315" cy="90" r="10"></circle>
+<rect class="s b jt" height="28" rx="6" width="36" x="200" y="136"></rect>
+<path class="fa" d="M214 141h8v5h5v8h-5v5h-8v-5h-5v-8h5z"></path>
+</svg>
+</div>
+<div>
+<div class="case-meta"><span class="num">04</span><span>2025</span><span class="status">Published, IC2NC 2025</span><span>Research, Navigation</span></div>
+<h2>Smart hospital logistics AMR</h2>
+<p class="summary">An AI-powered autonomous mobile robot that delivers supplies around a hospital and monitors patients without contact, presented at the International Conference on NexGen Networks and Cybernetics.</p>
+<div class="case-cols">
+<div>
+<h3>How it works</h3>
+<p>The system brings together ROS 2 navigation and SLAM for moving through wards, vision-based perception for understanding its surroundings, and speech recognition so staff and patients can talk to it.</p>
+</div>
+<div>
+<h3>Key features</h3>
+<ul>
+<li>Autonomous indoor payload delivery</li>
+<li>Contactless patient monitoring</li>
+<li>Vision-based perception</li>
+<li>Voice interaction through speech recognition</li>
+</ul>
+</div>
+</div>
+<ul aria-label="Tech used" class="stack"><li>ROS 2</li><li>SLAM</li><li>Nav2</li><li>Computer vision</li><li>Speech recognition</li></ul>
+<div class="detail-note"><strong>Research contribution.</strong> Combines hospital logistics, ROS 2-based autonomy, perception and contactless monitoring in one proposed integrated AMR system.<p class="caption">The résumé describes system design and concepts; do not present clinical validation or hospital deployment as completed.</p></div><div class="case-links"><a class="btn" href="https://www.researchgate.net/publication/400892245_An_Integrated_Autonomous_Mobile_Robot_for_Smart_Hospital_Logistics_and_Patient_Monitoring" rel="noopener" target="_blank">Read the paper</a><a class="btn" href="https://github.com/Melvinsajith/SMART-AUTONOMOUS-MOBILE-ROBOT-FOR-HOSPITAL" rel="noopener" target="_blank">View on GitHub</a></div>
+</div>
+</article>
+</div>
+<div class="p-cta">
+<div class="wrap">
+<h2>Want to see more, or build something together?</h2>
+<div class="cta">
+<a class="btn primary" href="#contact">Hire me</a>
+<a class="btn" href="https://github.com/Melvinsajith" rel="noopener" target="_blank">More on GitHub</a>
+</div>
+</div>
+</div>
+</main>
+<main id="linkedin-page" class="view" hidden><div class="p-hero"><div class="wrap"><a class="back" href="#top">← Back to home</a><h1 tabindex="-1">LinkedIn</h1><p class="lede">Engineering notes, ROS 2 project updates and lessons from building autonomous robots.</p><div class="cta"><a class="btn primary" href="https://in.linkedin.com/in/melvinsajith" target="_blank" rel="noopener noreferrer">Visit my LinkedIn profile</a><a class="btn" href="#/projects">Explore projects</a></div></div></div><section><div class="wrap"><div class="sec-head"><h2>What I share</h2><p>Follow my journey as a robotics software engineer and educator.</p></div><div class="focus"><div><h3>Build logs</h3><p>ROS 2 navigation, SLAM, robot control, simulation and hardware-integration progress.</p></div><div><h3>Technical learning</h3><p>Practical concepts and troubleshooting insights from working with ROS 2, Nav2 and robotics sensors.</p></div><div><h3>Teaching &amp; community</h3><p>Robotics workshops, mentoring experiences and resources for aspiring ROS developers.</p></div></div><p class="caption" style="margin-top:24px">This page describes the topics I work on; view LinkedIn for my actual posts and latest updates.</p></div></section></main>
+<main id="youtube-page" class="view" hidden><div class="p-hero"><div class="wrap"><a class="back" href="#top">← Back to home</a><h1 tabindex="-1">YouTube</h1><p class="role">Melvin Sajith - Robotics</p><p class="lede">Robotics and ROS 2 education through hands-on explanations, project demonstrations and practical tutorials.</p><div class="cta"><a class="btn primary" href="https://www.youtube.com/channel/UC0Nm0O9WIpnPzETvmGoI0jA" target="_blank" rel="noopener noreferrer">Watch on YouTube</a><a class="btn" href="#teaching">How I teach</a></div></div></div><section><div class="wrap"><div class="sec-head"><h2>Learn by building</h2><p>My teaching focuses on connecting software concepts to real robotics projects.</p></div><div class="focus"><div><h3>Getting started with ROS 2</h3><p>Understand workspaces, nodes, topics, services, actions and the command-line tools behind robot applications.</p></div><div><h3>Simulation to navigation</h3><p>Model robots in URDF, test in Gazebo and RViz, build maps with SLAM Toolbox and navigate with Nav2.</p></div><div><h3>Hardware &amp; projects</h3><p>Explore sensor integration, microcontrollers, robot control and autonomous mobile robot workflows.</p></div></div><p class="caption" style="margin-top:24px">Visit the channel for the current video catalog; the topics above describe my teaching focus, not a verified list of published videos.</p></div></section></main>
+<footer>
+<div class="wrap">
+<span>© 2026 Melvin Sajith</span>
+<button class="theme-toggle" id="themeBtn" type="button">Switch theme</button>
+</div>
+</footer>
+<script>
+/* ---------- theme toggle ---------- */
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themeBtn');
+  try{var saved=localStorage.getItem('ms-theme'); if(saved) root.setAttribute('data-theme',saved);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+    var next=cur==='light'?'dark':'light';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('ms-theme',next);}catch(e){}
+    window.dispatchEvent(new Event('themechange'));
+  });
+})();
+
+/* ---------- page router ---------- */
+(function(){
+  var home=document.getElementById('top'), proj=document.getElementById('projects-page');
+  var pages={projects:proj,linkedin:document.getElementById('linkedin-page'),youtube:document.getElementById('youtube-page')};
+  var navLinks=document.querySelectorAll('[data-nav]');
+  function route(){
+    var h=location.hash, match=h.match(/^#\/(projects|linkedin|youtube)(?:$|\/)/), page=match&&match[1];
+    var wasHidden=home.hidden;
+    home.hidden=!!page;
+    Object.keys(pages).forEach(function(k){pages[k].hidden=k!==page;});
+    navLinks.forEach(function(a){if(a.getAttribute('data-nav')===page)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    document.title=page?(page.charAt(0).toUpperCase()+page.slice(1)+' — Melvin Sajith'):'Melvin Sajith — Robotics Software Engineer';
+    if(page){window.scrollTo(0,0);pages[page].querySelector('h1').focus({preventScroll:true});return;}
+    if(wasHidden)window.dispatchEvent(new Event('resize'));
+    var id=h.slice(1),el=id&&id!=='top'?document.getElementById(id):null;
+    if(el)requestAnimationFrame(function(){el.scrollIntoView({behavior:wasHidden?'instant':'smooth'});});
+    else if(wasHidden||id==='top')window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',route);route();
+
+  var chips=proj.querySelectorAll('.chip'), cases=proj.querySelectorAll('.case');
+  chips.forEach(function(c){ c.addEventListener('click',function(){
+    var f=c.getAttribute('data-f');
+    chips.forEach(function(x){x.setAttribute('aria-pressed',String(x===c));});
+    cases.forEach(function(cs){ cs.hidden = f!=='all' && cs.getAttribute('data-cat').split(' ').indexOf(f)<0; });
+    var first=proj.querySelector('.case:not([hidden])');
+    cases.forEach(function(cs){cs.style.borderTop='';}); if(first) first.style.borderTop='0';
+  }); });
+})();
+
+/* ---------- SLAM hero ---------- */
+(function(){
+  var canvas=document.getElementById('map'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var W=160,H=100;               // grid cells (1 cell = 10 cm)
+  var grid=new Float32Array(W*H);
+  var off=document.createElement('canvas'); off.width=W; off.height=H;
+  var octx=off.getContext('2d'); var img=octx.createImageData(W,H);
+
+  function rect(x,y,w,h){return [[x,y,x+w,y],[x+w,y,x+w,y+h],[x+w,y+h,x,y+h],[x,y+h,x,y]];}
+  var walls=[[4,4,156,4],[156,4,156,96],[156,96,4,96],[4,96,4,4],
+    [60,4,60,40],[60,56,60,96],
+    [104,4,104,34],[104,50,104,96],
+    [104,60,130,60],[140,60,156,60]]
+    .concat(rect(20,20,14,10),rect(28,66,18,12),rect(76,22,10,10),rect(78,70,12,8),rect(120,16,16,8),rect(118,72,10,8));
+
+  var path=[[14,50],[40,48],[46,12],[12,12],[12,40],[52,48],[70,48],[68,14],[96,14],[96,42],[146,42],[146,14],[146,50],[135,52],[135,70],[146,86],[112,88],[112,68],[135,70],[135,52],[112,42],[96,50],[96,86],[66,88],[70,52],[52,48],[16,58],[16,86],[48,86],[16,86],[16,58]];
+
+  var robot, wp, trail, pause, rays;
+  function reset(){grid.fill(0); robot={x:path[0][0],y:path[0][1],t:0}; wp=1; trail=[]; pause=0; rays=[];}
+  reset();
+
+  var colors={};
+  function hex(c){ // css color -> [r,g,b,a]
+    var d=document.createElement('canvas').getContext('2d'); d.fillStyle=c; d.fillRect(0,0,1,1);
+    return d.getImageData(0,0,1,1).data;
+  }
+  function readColors(){
+    var s=getComputedStyle(document.documentElement);
+    ['unknown','free','wall','ray','robot','trail'].forEach(function(k){colors[k]=s.getPropertyValue('--map-'+k).trim();});
+    colors.u=hex(colors.unknown); colors.f=hex(colors.free); colors.w=hex(colors.wall);
+  }
+  readColors();
+  window.addEventListener('themechange',function(){readColors(); draw();});
+  matchMedia('(prefers-color-scheme: light)').addEventListener('change',function(){readColors(); draw();});
+
+  function cast(ox,oy,a,max){
+    var dx=Math.cos(a),dy=Math.sin(a),best=max;
+    for(var i=0;i<walls.length;i++){
+      var s=walls[i],ex=s[2]-s[0],ey=s[3]-s[1];
+      var den=dx*ey-dy*ex; if(Math.abs(den)<1e-9) continue;
+      var t=((s[0]-ox)*ey-(s[1]-oy)*ex)/den;
+      var u=((s[0]-ox)*dy-(s[1]-oy)*dx)/den;
+      if(t>0&&t<best&&u>=0&&u<=1) best=t;
+    }
+    return best;
+  }
+  var N=120, RANGE=42;
+  function scan(){
+    rays.length=0;
+    for(var k=0;k<N;k++){
+      var a=robot.t+k*2*Math.PI/N;
+      var d=cast(robot.x,robot.y,a,RANGE), hit=d<RANGE;
+      if(hit) d+= (Math.random()-.5)*0.6;
+      var cx=Math.cos(a),cy=Math.sin(a);
+      for(var r=0;r<d-1;r+=0.8){
+        var gx=(robot.x+cx*r)|0, gy=(robot.y+cy*r)|0, i=gy*W+gx;
+        if(gx>=0&&gy>=0&&gx<W&&gy<H&&grid[i]>-3) grid[i]-=0.35;
+      }
+      var hx=robot.x+cx*d, hy=robot.y+cy*d;
+      if(hit){var hi=(hy|0)*W+(hx|0); if(hx>=0&&hy>=0&&hx<W&&hy<H) grid[hi]=Math.min(4,grid[hi]+1.6);}
+      rays.push(hx,hy);
+    }
+  }
+  function step(){
+    if(pause>0){ if(--pause===0) reset(); return; }
+    var tgt=path[wp], dx=tgt[0]-robot.x, dy=tgt[1]-robot.y, dist=Math.hypot(dx,dy);
+    var want=Math.atan2(dy,dx), diff=Math.atan2(Math.sin(want-robot.t),Math.cos(want-robot.t));
+    robot.t+=Math.max(-0.08,Math.min(0.08,diff));
+    if(Math.abs(diff)<0.5){var v=Math.min(0.42,dist); robot.x+=Math.cos(robot.t)*v; robot.y+=Math.sin(robot.t)*v;}
+    if(dist<0.8){ wp++; if(wp>=path.length){ wp=0; } if(wp===1){ pause=180; } }
+    if(frame%3===0){trail.push(robot.x,robot.y); if(trail.length>1600) trail.splice(0,2);}
+    scan();
+  }
+  function mix(a,b,t){return a+(b-a)*t;}
+  function draw(){
+    var u=colors.u,f=colors.f,w=colors.w,d=img.data,known=0;
+    for(var i=0;i<W*H;i++){
+      var g=grid[i],c=u,t=0,o=i*4;
+      if(g<0){t=Math.min(1,-g/2);c=f; if(t>.3) known++;}
+      else if(g>0){t=Math.min(1,g/2.4);c=w; known++;}
+      d[o]=mix(u[0],c[0],t); d[o+1]=mix(u[1],c[1],t); d[o+2]=mix(u[2],c[2],t); d[o+3]=255;
+    }
+    octx.putImageData(img,0,0);
+    var cw=canvas.width,ch=canvas.height,s=cw/W;
+    ctx.imageSmoothingEnabled=false;
+    ctx.drawImage(off,0,0,cw,ch);
+    // rays
+    if(rays.length && !reduce){
+      ctx.strokeStyle=colors.ray; ctx.lineWidth=Math.max(1,s*.15); ctx.beginPath();
+      for(var k=0;k<rays.length;k+=2){ctx.moveTo(robot.x*s,robot.y*s); ctx.lineTo(rays[k]*s,rays[k+1]*s);}
+      ctx.stroke();
+    }
+    // trail
+    if(trail.length>3){
+      ctx.strokeStyle=colors.trail; ctx.lineWidth=Math.max(1,s*.35); ctx.setLineDash([s*1.2,s*1.2]); ctx.beginPath();
+      ctx.moveTo(trail[0]*s,trail[1]*s); for(var j=2;j<trail.length;j+=2) ctx.lineTo(trail[j]*s,trail[j+1]*s);
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+    // robot
+    ctx.save(); ctx.translate(robot.x*s,robot.y*s); ctx.rotate(robot.t);
+    ctx.fillStyle=colors.robot; ctx.beginPath();
+    ctx.moveTo(s*3.2,0); ctx.lineTo(-s*2.2,s*2.2); ctx.lineTo(-s*1.2,0); ctx.lineTo(-s*2.2,-s*2.2); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    // next goal
+    if(!reduce){
+      var g2=path[wp]; ctx.strokeStyle=colors.robot; ctx.lineWidth=Math.max(1,s*.3);
+      ctx.beginPath(); ctx.arc(g2[0]*s,g2[1]*s,s*1.6,0,Math.PI*2); ctx.stroke();
+    }
+    return known;
+  }
+  var rx=document.getElementById('rx'),ry=document.getElementById('ry'),rt=document.getElementById('rt'),rm=document.getElementById('rm');
+  var interior=(152*92);
+  function readout(known){
+    rx.textContent=(robot.x/10).toFixed(2)+' m';
+    ry.textContent=((H-robot.y)/10).toFixed(2)+' m';
+    var deg=Math.round((-robot.t*180/Math.PI)%360); if(deg<0) deg+=360;
+    rt.textContent=deg+'°';
+    rm.textContent=Math.min(100,Math.round(known/interior*100))+'%';
+  }
+  function size(){
+    var r=canvas.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);
+    canvas.width=Math.round(r.width*dpr); canvas.height=Math.round(r.width*dpr*10/16);
+    draw();
+  }
+
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var frame=0, visible=true, raf=null;
+  if(reduce){
+    // build the finished map once, then show it still
+    var guard=0; do{step(); frame++; guard++;} while(pause===0 && guard<20000);
+    rays.length=0; size(); readout(draw()); window.addEventListener('resize',size);
+    return;
+  }
+  function loop(){
+    raf=null; if(!visible||document.hidden) return;
+    frame++; step(); var k=draw(); if(frame%8===0) readout(k);
+    raf=requestAnimationFrame(loop);
+  }
+  function kick(){ if(!raf && visible && !document.hidden) raf=requestAnimationFrame(loop); }
+  new IntersectionObserver(function(e){visible=e[0].isIntersecting; kick();}).observe(canvas);
+  document.addEventListener('visibilitychange',kick);
+  window.addEventListener('resize',size);
+  size(); kick();
+})();
+</script>
 </body>
-
 </html>
